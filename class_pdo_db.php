@@ -9,14 +9,15 @@ class database extends PDO
 {
 	#DEĞİŞKENLER B-----------------------------------------------#
 	/*Parametrelerde ekleme çıkarma yapıldığında sorguların hazırlandığı fonksiyonlarda ilgili değişiklik yapılmalıdır*/
-	var $sql = '';
-	var $c   = ''; // Columns  Parametreleri
-	var $t   = ''; // Table    Parametreleri
-	var $w   = ''; // Where    Parametreleri
-	var $j   = ''; // Join 	   Parametreleri
-	var $o   = ''; // Order By Parametreleri
-	var $g   = ''; // Group By Parametreleri
-	var $co  = ''; // Count    Parametreleri
+	var $sql    = '';
+	var $c      = ''; // Columns  Parametreleri
+	var $t      = ''; // Table    Parametreleri
+	var $w      = ''; // Where    Parametreleri
+	var $j      = ''; // Join 	   Parametreleri
+	var $o      = ''; // Order By Parametreleri
+	var $g      = ''; // Group By Parametreleri
+	var $co     = ''; // Count    Parametreleri
+	var $result = '';
 	#DEĞİŞKENLER S_______________________________________________#
 	
 	#İLK ÇALIŞACAK B-----------------------------------------------#
@@ -80,7 +81,9 @@ class database extends PDO
 		if (empty($this->w)) $this->w = "";
 		else $this->w = "WHERE {$this->w}";
 		$this->sql = "SELECT {$this->c} FROM {$this->t} {$this->w}";
-		$this->execute('select', $this->sql);
+		
+		$this->result = $this->execute('select', $this->sql);
+		return $this->result;
 	} //function select() S
 	#SELECT İŞLEMİ S_______________________________________________#
 	
@@ -91,8 +94,7 @@ class database extends PDO
 		$query = $this->prepare($sql);
 		$query->execute();
 		$result = $query->fetchAll(PDO::FETCH_ASSOC);
-		var_dump($result);
-		return "akif";
+		return $result;
 	}
 	#EXECUTE İŞLEMİ S_______________________________________________#
 }	
