@@ -90,16 +90,24 @@ class database extends PDO
 	#EXECUTE İŞLEMİ B-----------------------------------------------#
 	public function execute($func, $sql)
 	{
-		echo $sql."<br>";
-		$query = $this->prepare($sql);
-		$query->execute();
-		$result = $query->fetchAll(PDO::FETCH_ASSOC);
-		return $result;
+		/*Select fonksiyonundan gelen sql sorgusunu exec  yapar*/
+		if ($func=="select"){
+			$query = $this->prepare($sql);
+			$query->execute();
+			var_dump($query);
+			$result = $query->fetchAll(PDO::FETCH_ASSOC);
+			/*Tek değerler için*/
+			if ((count($result)==1) and (is_array($result[0])))
+			{
+				$result = $result[0];
+			}
+			return $result;
+		}
 	}
 	#EXECUTE İŞLEMİ S_______________________________________________#
 }	
 
 $db = new database();
-$qr = $db->select("c:id, c:type,c:email, t:email");
+$qr = $db->select("c:id, c:type,c:email, t:email, w:id<35");
 var_dump($qr);
 ?>
