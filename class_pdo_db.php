@@ -1,23 +1,9 @@
 ﻿<?php
-/*
-- Class database
-- @author Akif ALTUN
-- email altun_akif@hotmail.com
-- date 23.02.2015
-*/
 class database extends PDO
 {
 	#DEĞİŞKENLER B-----------------------------------------------#
-	/*Parametrelerde ekleme çıkarma yapıldığında sorguların hazırlandığı fonksiyonlarda ilgili değişiklik yapılmalıdır*/
 	var $sql    = '';
-	var $c      = ''; // Columns  Parametreleri
-	var $t      = ''; // Table    Parametreleri
-	var $w      = ''; // Where    Parametreleri
-	var $j      = ''; // Join 	   Parametreleri
-	var $o      = ''; // Order By Parametreleri
-	var $g      = ''; // Group By Parametreleri
-	var $co     = ''; // Count    Parametreleri
-	var $result = '';
+	var $result = 'Null';
 	#DEĞİŞKENLER S_______________________________________________#
 	
 	#İLK ÇALIŞACAK B-----------------------------------------------#
@@ -37,77 +23,46 @@ class database extends PDO
 			parent::__construct($dsn, $username, $password, $options);
 			} //try S
 		catch(PDOException $e){
-							   echo "Veri Tabanı Bağlantı HATASI!!! : " . $e->getMessage() . "<br/>";
+							   echo  "Error : ".$e->getMessage() ."<br/>"."File : ".$e->getFile() . "<br/>"."Line : ".$e->getLine() . "<br/>";
 							   die;
 							  }//catch S
 	}//function __construct S
 	#İLK ÇALIŞACAK S_______________________________________________#
 	
-	#EXPLODE FONKSİYON B-----------------------------------------------#
-	/*Kullanıcıdan gelen parametreleri kullanılabilir hale getirir*/
-	private function p_explode($param){
-		$param = explode(",",$param);
-		foreach($param as $row)
-		{
-			$row = explode(":", $row);
-			$row[0] = trim($row[0]);
-			$row[1] = trim($row[1]);
-			try
-			{
-				if (@is_null($this->{"$row[0]"})) throw new Exception("{{$row[0]}} geçersiz parametri!");
-				$this->{"$row[0]"}.=" {$row[1]},";
-			}
-			catch (Exception $e) 
-			{
-				 echo "Hata!: " . $e->getMessage() . "<br/>";
-			}
-		}
-		/*Parametrelerin en sonundaki gereksiz virgülü siler*/
-		if (!empty($this->c)){$this->c = trim($this->c); $this->c = substr($this->c, 0, -1);}
-		if (!empty($this->t)){$this->t = trim($this->t); $this->t = substr($this->t, 0, -1);}
-		if (!empty($this->w)){$this->w = trim($this->w); $this->w = substr($this->w, 0, -1);}
-		if (!empty($this->j)){$this->j = trim($this->j); $this->j = substr($this->j, 0, -1);}
-		if (!empty($this->o)){$this->o = trim($this->o); $this->o = substr($this->o, 0, -1);}
-		if (!empty($this->g)){$this->g = trim($this->g); $this->g = substr($this->g, 0, -1);}
-		if (!empty($this->co)){$this->co = trim($this->co); $this->co = substr($this->co, 0, -1);}
-	}
-	#EXPLODE FONKSİYON S_______________________________________________#
-	
-	#SELECT İŞLEMİ B-----------------------------------------------#
-	/*Select işlemi için sql sorgu hazırlar*/
-	public function select($param){
-		$this->p_explode($param);
-		if (empty($this->c)) $this->c = "*";
-		if (empty($this->w)) $this->w = "";
-		else $this->w = "WHERE {$this->w}";
-		$this->sql = "SELECT {$this->c} FROM {$this->t} {$this->w}";
-		
-		$this->result = $this->execute('select', $this->sql);
-		return $this->result;
-	} //function select() S
-	#SELECT İŞLEMİ S_______________________________________________#
-	
-	#EXECUTE İŞLEMİ B-----------------------------------------------#
-	public function execute($func, $sql)
+	public function exec($str)
 	{
-		/*Select fonksiyonundan gelen sql sorgusunu exec  yapar*/
-		if ($func=="select"){
-			$query = $this->prepare($sql);
-			$query->execute();
-			var_dump($query);
-			$result = $query->fetchAll(PDO::FETCH_ASSOC);
-			/*Tek değerler için*/
-			if ((count($result)==1) and (is_array($result[0])))
-			{
-				$result = $result[0];
-			}
-			return $result;
-		}
+		var_dump($str);
+		
+		$this->p_explode($str);
+		return $this->result;
 	}
-	#EXECUTE İŞLEMİ S_______________________________________________#
-}	
+	
+	private function p_explode($str)
+	{
+		preg_match_all("/.*?\[.*?\]/", $str, $result);
+		var_dump($result);
+		
+		foreach ($result[0] AS $row){
+		$row 	= trim($row);
+		preg_match("/\[.*?\]/", $row, $re);
+		$re 	= $re[0];
+		$re 	= substr($re,1,((strlen($re))-2));
+		$re 	= '"akif", "osman"';
+		$res[]  = array((strstr($row, " ", true)), "akif", "osman");	
+		}
+		
+		$result = array_values($res);
+		var_dump($result);
+	}
+	
+}
+
 
 $db = new database();
-$qr = $db->select("c:id, c:type,c:email, t:email, w:id<35");
-var_dump($qr);
+$result = $db->exec("SELECT [(table1:id, ad, soyad), (table2:id,ad,soyad->inner, ON=table1.id = table2.id)] 
+		   WHERE [id = 5 and aid =4] 
+		   ORDER BY [id DesC] 
+		   GROUP BY[ad] 
+		   LIMIT [0,7]");
+var_dump($result);		   
 ?>
