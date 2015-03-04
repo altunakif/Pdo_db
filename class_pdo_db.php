@@ -56,13 +56,17 @@ class database extends PDO
 		try{
 			preg_match_all("/.*?\[.*?\]/", $str, $result);
 			foreach ($result[0] AS $row){
-			$row 	= trim($row);
-			preg_match("/\[.*?\]/", $row, $re);
-			$re 	= $re[0];
-			$re 	= substr($re,1,((strlen($re))-2));
-			$res[]  = array((strstr($row, " ", true)), $re);	
+				$row 	= trim($row);
+				preg_match("/\[.*?\]/", $row, $re);
+				$re 	= $re[0];
+				$re 	= substr($re,1,((strlen($re))-2));
+				$res[]  = array((strstr($row, " ", true)), $re);	
 			}
+			/*SELECT [(email:id, adsoyad), (blog:id, title->inner, ON email.id=blog.id)]
+			  ()lere göre ayırma 
+			*/
 			preg_match_all("/\(.*?\)/", $res[0][1], $result);
+			if (  preg_match_all("/\(.*?\(.*?\).*?\)/", $res[0][1]) ) preg_match_all("/\(.*?\(.*?\).*?\)/", $res[0][1], $result);
 			unset($res[0][1]);
 			
 			foreach($result[0] AS $row)
@@ -71,8 +75,22 @@ class database extends PDO
 			}
 			$res[0] = array_values($res[0]);
 			$result = array_values($res);
+			/*
+				var_dump($result);
+				array (size=2)
+				  0 => 
+					array (size=3)
+					  0 => string 'SELECT' (length=6)
+					  1 => string 'email:id, adsoyad' (length=17)
+					  2 => string 'blog:id, title->inner, ON email.id=blog.id' (length=42)
+				  1 => 
+					array (size=2)
+					  0 => string 'WHERE' (length=5)
+					  1 => string 'email.id=35' (length=11)
+			*/
 			
-			$this->metot = $result[0][0];
+			$this->metot = $result[0][0]; /*var_dump($this->metot); string 'SELECT' (length=6)*/
+			
 			for ($c=1;$c<=(count($result[0])-1);$c++)
 			{
 				$var = $result[0][$c];
@@ -100,9 +118,27 @@ class database extends PDO
 						array_push($this->tables[$c-1], $row);	
 					}
 				}
-				
 			}
+			/*
+				var_dump($this->tables);
+				var_dump($this->join);
+				
+				array (size=2)
+				  0 => 
+					array (size=3)
+					  0 => string 'email' (length=5)
+					  1 => string 'id' (length=2)
+					  2 => string ' adsoyad' (length=8)
+				  1 => 
+					array (size=3)
+					  0 => string 'blog' (length=4)
+					  1 => string 'id' (length=2)
+					  2 => string ' title' (length=6)
+				array (size=1)
+				  0 => string 'inner JOIN blog  ON email.id=blog.id' (length=36)
+			*/
 			
+			/*Değişkenlere değer atanır*/
 			for($c=1;$c<=(count($result)-1);$c++){
 				$var = $result[$c][0];
 				$var = strtolower($var);
@@ -130,6 +166,12 @@ class database extends PDO
 				$col = trim($col);
 				$col = substr("$col", 0, -1);
 				$table = $this->tables[0][0]; 
+				/*
+					var_dump($col);
+				 	var_dump($table);
+					string 'id,  adsoyad' (length=12)
+					string 'email' (length=5)
+				*/
 			}
 			else{
 				foreach ($this->tables AS $row){
@@ -142,6 +184,12 @@ class database extends PDO
 				$col   = trim($col);
 				$col   = substr($col, 0, -1);
 				$table = $this->tables[0][0]; 
+				/*
+					var_dump($col);
+					var_dump($table);
+					string 'email.id, email.adsoyad, blog.id, blog.title' (length=44)
+					string 'email' (length=5)
+				*/
 			}
 			
 			if (!is_null($this->join)){
@@ -162,6 +210,7 @@ class database extends PDO
 			else $limit ="";
 			
 			$this->sql = $this->metot." ". $col." FROM ".$table." ".$join." ".$where." ".$group." ".$order." ".$limit;
+			/*var_dump($this->sql);  string 'SELECT id,  adsoyad FROM email  WHERE  email.id=35   ' (length=53)*/
 			$this->run();
 		}
 		catch(Exception $e){
@@ -175,14 +224,16 @@ class database extends PDO
 			$metot = $this->metot;
 			$metot = strtolower($metot);
 			if ($metot == "select"){
-				//$query = PDO::query($this->sql);
-				//$result = $query->fetchAll(PDO::FETCH_ASSOC);
-				
 				$query = PDO::prepare($this->sql);
 				if ($query){
 					$query->execute();
 					$result = $query->fetchAll(PDO::FETCH_ASSOC);
 					$this->result = $result;
+					if ((count($result)) == 1){
+						$this->result = $result[0];	
+					}else{
+						$this->result = $result;	
+					}
 				}
 				else{
 					throw new Exception($this->sql." (db cevap vermedi)");
@@ -197,8 +248,10 @@ class database extends PDO
 
 
 $db = new database();
-$db->exec("SELECT [(emai:id, type, adsoyad), (blog:id,category,title->inner, ON email.id = blog.id)]");
-var_dump ($db->result);		   
+$db->exec("SELECT [(email:id, adsoyad)]
+		   WHERE  [email.id=35]");
+var_dump ($db->result);
+var_dump ($db->sql);		   
 
 /*
 Örnek
