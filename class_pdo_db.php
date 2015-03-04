@@ -45,12 +45,15 @@ class database extends PDO
 	}//function __construct S
 	#İLK ÇALIŞACAK S_______________________________________________#
 	
+	#EXEC B-----------------------------------------------#
 	public function exec($str)
 	{
 		$this->p_explode($str);
 		return $this->result;
 	}
+	#EXEC S_______________________________________________#
 	
+	#EXPLODE B-----------------------------------------------#
 	private function p_explode($str)
 	{
 		try{
@@ -152,8 +155,10 @@ class database extends PDO
 			echo  "Error : ".$e->getMessage() ."<br/>"."File : ".$e->getFile() . "<br/>"."Line : ".$e->getLine() . "<br/>";
 
 		}
-	}//function p_explode 
+	}//function p_explode
+	#EXPLODE S_______________________________________________#
 	
+	#MAKE SQL B-----------------------------------------------#
 	public function make_sql()
 	{
 		try{
@@ -216,8 +221,10 @@ class database extends PDO
 		catch(Exception $e){
 			echo  "Error : ".$e->getMessage() ."<br/>"."File : ".$e->getFile() . "<br/>"."Line : ".$e->getLine() . "<br/>";
 		}
-	}//function sql
+	}//function make_sql
+	#MAKE SQL S_______________________________________________#
 	
+	#RUN B-----------------------------------------------#
 	public function run()
 	{
 		try{
@@ -243,7 +250,8 @@ class database extends PDO
 		catch(Exception $e){
 			echo  "Error : ".$e->getMessage() ."<br/>"."File : ".$e->getFile() . "<br/>"."Line : ".$e->getLine() . "<br/>";
 		}
-	}
+	} //function run
+	#RUN S_______________________________________________#
 }
 
 
