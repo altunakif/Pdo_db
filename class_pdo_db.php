@@ -2,15 +2,15 @@
 class database extends PDO
 {
 	#DEĞİŞKENLER B-----------------------------------------------#
-	var $metot;
-	var $tables;
-	var $where;
-	var $order;
-	var $group;
-	var $limit;
-	var $join;
-	var $sql;
-	var $result;
+	var 	$metot;
+	var 	$tables;
+	var 	$where;
+	var 	$order;
+	var 	$group;
+	var 	$limit;
+	var 	$join;
+	var 	$sql;
+	public  $result;
 	#DEĞİŞKENLER S_______________________________________________#
 	
 	#İLK ÇALIŞACAK B-----------------------------------------------#
@@ -38,8 +38,6 @@ class database extends PDO
 	
 	public function exec($str)
 	{
-		var_dump($str);
-		
 		$this->p_explode($str);
 		return $this->result;
 	}
@@ -98,37 +96,82 @@ class database extends PDO
 		for($c=1;$c<=(count($result)-1);$c++){
 			$var = $result[$c][0];
 			$var = strtolower($var);
-			$this->$var = $result[$c][0]." ".$result[$c][1];
+			if (($var == "order") OR ($var == "group")) $by = "BY";
+			else $by = "";
+			$this->$var = $result[$c][0]." $by ".$result[$c][1];
 		}
-		$this->sql();
+		$this->make_sql();
 	}//function p_explode
 	
-	public function sql()
+	public function make_sql()
 	{
-		var_dump($this->metot);
-		var_dump($this->tables);
-		var_dump($this->join);
-		var_dump($this->where);
-		var_dump($this->order);
-		var_dump($this->group);
-		var_dump($this->limit);	
-		var_dump($this->sql);
+		if ((count($this->tables))== 1)
+		{
+			for ($c=1;$c<=(count($this->tables[0])-1);$c++){
+			$col .= $this->tables[0][$c].", ";
+			}
+			
+			$col = trim($col);
+			$col = substr("$col", 0, -1);
+			$table = $this->tables[0][0]; 
+		}
+		else{
+			foreach ($this->tables AS $row){
+				$table = $row[0];
+				for($c=1; $c<=(count($row)-1);$c++){
+					$var = trim($row[$c]);
+					$col .= "{$table}.{$var}, ";
+				}
+			}
+			$col   = trim($col);
+			$col   = substr($col, 0, -1);
+			$table = $this->tables[0][0]; 
+		}
+		
+		if (!is_null($this->join)){
+			foreach($this->join AS $row) {$join .=" $row ";}
+		}
+		else $join = "";
+		
+		if (!is_null($this->where)) $where = $this->where;
+		else $where ="";
+		
+		if (!is_null($this->order)) $order = $this->order;
+		else $order ="";
+		
+		if (!is_null($this->group)) $group = $this->group;
+		else $group ="";
+		
+		if (!is_null($this->limit)) $limit = $this->limit;
+		else $limit ="";
+		
+		$this->sql = $this->metot." ". $col." FROM ".$table." ".$join." ".$where." ".$group." ".$order." ".$limit;
+		echo $this->sql;
+		$this->run();
+	}//function sql
+	
+	public function run()
+	{
+		$metot = $this->metot;
+		$metot = strtolower($metot);
+		if ($metot == "select"){
+			$query = PDO::query($this->sql);
+			$query = $query->fetchAll(PDO::FETCH_ASSOC);
+			$this->result = $query;
+		}
 	}
 }
 
 
 $db = new database();
-$result = $db->exec("SELECT [(table1:id, ad, soyad), (table2:id,ad,soyad->inner, ON=table1.id = table2.id), (table3:yid,ad,soyad->left, ON=table1.id = table2.id)] 
-		   WHERE [id = 5 and aid =4] 
-		   ORDER BY [id DesC] 
-		   GROUP BY[ad] 
-		   LIMIT [0,7]");
-//var_dump($result);		   
+$result =  $db->exec("SELECT [(email:id, type, adsoyad), (blog:id,category,title->inner, ON email.id = blog.id)]");
+var_dump ($db->result);		   
+echo $db->sql;		   
 
 
 /*
 Örnek
-$result = $db->exec("SELECT [(table1:id, ad, soyad), (table2:id,ad,soyad->inner, ON=table1.id = table2.id)] 
+$result = $db->exec("SELECT [(table1:id, ad, soyad), (table2:id,ad,soyad->inner, ON table1.id = table2.id)] 
 		   WHERE [id = 5 and aid =4] 
 		   ORDER BY [id DesC] 
 		   GROUP BY[ad] 
