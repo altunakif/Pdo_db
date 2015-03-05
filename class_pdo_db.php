@@ -1,5 +1,4 @@
 ﻿<?php
-
 /**
  * Class database
  * @author Akif ALTUN
@@ -7,7 +6,7 @@
  * @mail altun_akif@hotmail.com
  * @time Wednesday, 2 March 2015 09:47 (GMT + 2:00) Turkey
  * @update 5 March 2015 16:33 (GMT + 2:00) Turkey
- */
+*/
 class database extends PDO
 {
 	#DEĞİŞKENLER B-----------------------------------------------#
@@ -18,7 +17,7 @@ class database extends PDO
 	var 	$group;
 	var 	$limit;
 	var 	$join;
-	var 	$sql;
+	public 	$sql;
 	public  $result;
 	#DEĞİŞKENLER S_______________________________________________#
 	
@@ -165,7 +164,7 @@ class database extends PDO
 			$metot = $this->metot;
 			$metot = strtolower($metot);
 			
-			if($metot == "select")
+			if($metot == "select") /* Select için sql oluşturma*/
 			{
 				if ((count($this->tables))== 1)
 				{
@@ -224,7 +223,7 @@ class database extends PDO
 				/*var_dump($this->sql);  string 'SELECT id,  adsoyad FROM email  WHERE  email.id=35   ' (length=53)*/
 			} /*if($metot == "select")*/
 			
-			if($metot == "insert")
+			if($metot == "insert") /* Insert için sql oluşturma*/
 			{
 				foreach ($this->tables AS $row)
 				{
@@ -246,7 +245,7 @@ class database extends PDO
 				$this->sql = $sql;
 			} /*if($metot == "insert")*/
 			
-			if ($metot == "update")
+			if ($metot == "update") /* Update için sql oluşturma*/
 			{
 				if (!is_null($this->where)) $where = $this->where;
 				else $where ="";
@@ -267,7 +266,7 @@ class database extends PDO
 				$this->sql = $sql;
 			} /*if ($metot == "update")*/
 			
-			if ($metot == "delete")
+			if ($metot == "delete") /* Delete için sql oluşturma*/
 			{
 				if (!is_null($this->where)) $where = $this->where;
 				else $where ="";
@@ -307,6 +306,7 @@ class database extends PDO
 	#MAKE SQL S_______________________________________________#
 	
 	#RUN B-----------------------------------------------#
+	/*make_sql() fonksiyonunda oluşan sql burda çalıştırılır*/
 	public function run()
 	{
 		try{
@@ -388,10 +388,7 @@ class database extends PDO
 }
 
 
-$db = new database();
-$db->exec("DEleTe [(email:adsoyad='Sibel Pamuk'), (haberler:baslik='baslik')]");
-var_dump ($db->result);
-var_dump ($db->sql);
+
 
 /*
 Örnek
