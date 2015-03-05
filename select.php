@@ -10,11 +10,11 @@ $db = new database();
 
 // Example 1
 $db = new database();
-$db->exec("SELECT [(haberler:aid, baslik, link), (iller:ilid, Sehir, Plaka->inner, ON haberler.aid = iller.ilid)] 
-		   WHERE [aid >= 5 and aid <= 20] 
+$db->exec("SELECT 	[(haberler:aid, baslik, link), (iller:ilid, Sehir, Plaka->inner, ON haberler.aid = iller.ilid)] 
+		   WHERE 	[aid >= 5 and aid <= 20] 
 		   ORDER BY [id DesC] 
-		   GROUP BY[aid] 
-		   LIMIT [0,2]");
+		   GROUP BY	[aid] 
+		   LIMIT 	[0,2]");
 var_dump ($db->result);
 var_dump ($db->sql);
 /*
@@ -42,8 +42,8 @@ string 'SELECT haberler.aid, haberler.baslik, haberler.link, iller.ilid, iller.S
 
 // Example 2
 $db = new database();
-$db->exec("SELECT [(iller:ilid, Sehir, Plaka)] 
-		   WHERE [Sehir like '%SAK%']");
+$db->exec("SELECT 	[(iller:ilid, Sehir, Plaka)] 
+		   WHERE 	[Sehir like '%SAK%']");
 var_dump ($db->result);
 var_dump ($db->sql);
 /*
