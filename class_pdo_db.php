@@ -5,8 +5,8 @@
  * @author Akif ALTUN
  * @github https://github.com/altunakif
  * @mail altun_akif@hotmail.com
- * @time Wednesday, 2 March 2015 09:47:17 a.m (GMT + 2:00) Turkey
- * @update 4 March 2015 11:27:44 a.m (GMT + 2:00) Turkey
+ * @time Wednesday, 2 March 2015 09:47 (GMT + 2:00) Turkey
+ * @update 5 March 2015 16:33 (GMT + 2:00) Turkey
  */
 class database extends PDO
 {
