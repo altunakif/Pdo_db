@@ -162,60 +162,142 @@ class database extends PDO
 	public function make_sql()
 	{
 		try{
-			if ((count($this->tables))== 1)
+			$metot = $this->metot;
+			$metot = strtolower($metot);
+			
+			if($metot == "select")
 			{
-				for ($c=1;$c<=(count($this->tables[0])-1);$c++){
-				$col .= $this->tables[0][$c].", ";
+				if ((count($this->tables))== 1)
+				{
+					for ($c=1;$c<=(count($this->tables[0])-1);$c++){
+					$col .= $this->tables[0][$c].", ";
+					}
+					
+					$col = trim($col);
+					$col = substr("$col", 0, -1);
+					$table = $this->tables[0][0]; 
+					/*
+						var_dump($col);
+						var_dump($table);
+						string 'id,  adsoyad' (length=12)
+						string 'email' (length=5)
+					*/
+				}
+				else{
+					foreach ($this->tables AS $row){
+						$table = $row[0];
+						for($c=1; $c<=(count($row)-1);$c++){
+							$var = trim($row[$c]);
+							$col .= "{$table}.{$var}, ";
+						}
+					}
+					$col   = trim($col);
+					$col   = substr($col, 0, -1);
+					$table = $this->tables[0][0]; 
+					/*
+						var_dump($col);
+						var_dump($table);
+						string 'email.id, email.adsoyad, blog.id, blog.title' (length=44)
+						string 'email' (length=5)
+					*/
 				}
 				
-				$col = trim($col);
-				$col = substr("$col", 0, -1);
-				$table = $this->tables[0][0]; 
-				/*
-					var_dump($col);
-				 	var_dump($table);
-					string 'id,  adsoyad' (length=12)
-					string 'email' (length=5)
-				*/
-			}
-			else{
-				foreach ($this->tables AS $row){
-					$table = $row[0];
-					for($c=1; $c<=(count($row)-1);$c++){
-						$var = trim($row[$c]);
-						$col .= "{$table}.{$var}, ";
+				if (!is_null($this->join)){
+					foreach($this->join AS $row) {$join .=" $row ";}
+				}
+				else $join = "";
+				
+				if (!is_null($this->where)) $where = $this->where;
+				else $where ="";
+				
+				if (!is_null($this->order)) $order = $this->order;
+				else $order ="";
+				
+				if (!is_null($this->group)) $group = $this->group;
+				else $group ="";
+				
+				if (!is_null($this->limit)) $limit = $this->limit;
+				else $limit ="";
+				
+				
+				$this->sql = $this->metot." ". $col." FROM ".$table." ".$join." ".$where." ".$group." ".$order." ".$limit;
+				/*var_dump($this->sql);  string 'SELECT id,  adsoyad FROM email  WHERE  email.id=35   ' (length=53)*/
+			} /*if($metot == "select")*/
+			
+			if($metot == "insert")
+			{
+				foreach ($this->tables AS $row)
+				{
+					$table  = $row[0];
+					$col    = "";
+					$colVal = "";
+					for ($c=1;$c<=(count($row)-1);$c++)
+					{
+						$col 	.= strstr($row[$c], "=", true).", ";
+						$colVal .= substr((strstr($row[$c], "=")), 1).", ";
+					}
+					$col = trim($col);
+					$col = substr($col, 0, -1);
+					$colVal = trim($colVal);
+					$colVal = substr($colVal, 0, -1);
+					
+					$sql[] = "INSERT INTO {$table} ($col) VALUES ($colVal) ";
+				}
+				$this->sql = $sql;
+			} /*if($metot == "insert")*/
+			
+			if ($metot == "update")
+			{
+				if (!is_null($this->where)) $where = $this->where;
+				else $where ="";
+				
+				foreach ($this->tables AS $row)
+				{
+					$table  = $row[0];
+					$col    = "";
+					$colVal = "";
+					for ($c=1;$c<=(count($row)-1);$c++)
+					{
+						$col 	.= $row[$c].", ";
+					}
+					$col = trim($col);
+					$col = substr($col, 0, -1);
+					$sql[] = "UPDATE {$table} SET {$col} {$where}";
+				}
+				$this->sql = $sql;
+			} /*if ($metot == "update")*/
+			
+			if ($metot == "delete")
+			{
+				if (!is_null($this->where)) $where = $this->where;
+				else $where ="";
+				
+				foreach ($this->tables AS $row)
+				{
+					$table  = $row[0];
+					$col    = "";
+					$colVal = "";
+					for ($c=1;$c<=(count($row)-1);$c++)
+					{
+						$table  = $row[0];
+						$col    = "";
+						$colVal = "";
+						for ($c=1;$c<=(count($row)-1);$c++)
+						{
+							$col 	.= strstr($row[$c], "=", true).", ";
+							$colVal .= substr((strstr($row[$c], "=")), 1).", ";
+						}
+						$col = trim($col);
+						$col = substr($col, 0, -1);
+						$colVal = trim($colVal);
+						$colVal = substr($colVal, 0, -1);
+						
+						$sql[] = "DELETE FROM {$table} WHERE ($col) = ($colVal) ";
 					}
 				}
-				$col   = trim($col);
-				$col   = substr($col, 0, -1);
-				$table = $this->tables[0][0]; 
-				/*
-					var_dump($col);
-					var_dump($table);
-					string 'email.id, email.adsoyad, blog.id, blog.title' (length=44)
-					string 'email' (length=5)
-				*/
-			}
+				$this->sql = $sql;
+			} /*if ($metot == "delete")*/
 			
-			if (!is_null($this->join)){
-				foreach($this->join AS $row) {$join .=" $row ";}
-			}
-			else $join = "";
-			
-			if (!is_null($this->where)) $where = $this->where;
-			else $where ="";
-			
-			if (!is_null($this->order)) $order = $this->order;
-			else $order ="";
-			
-			if (!is_null($this->group)) $group = $this->group;
-			else $group ="";
-			
-			if (!is_null($this->limit)) $limit = $this->limit;
-			else $limit ="";
-			
-			$this->sql = $this->metot." ". $col." FROM ".$table." ".$join." ".$where." ".$group." ".$order." ".$limit;
-			/*var_dump($this->sql);  string 'SELECT id,  adsoyad FROM email  WHERE  email.id=35   ' (length=53)*/
 			$this->run();
 		}
 		catch(Exception $e){
@@ -245,7 +327,58 @@ class database extends PDO
 				else{
 					throw new Exception($this->sql." (db cevap vermedi)");
 				}
-			}
+			} /*if ($metot == "select")*/
+			
+			if ($metot == "insert")
+			{
+				foreach($this->sql AS $row)
+				{
+					$query = PDO::prepare($row);
+					if($query)
+					{
+						$query->execute();
+						$this->result[] = $row. "(true)";
+					}
+					else
+					{
+						throw new Exception($row." (db cevap vermedi)");
+					}
+				}
+			} /*if ($metot == "insert")*/
+			
+			if ($metot == "update")
+			{
+				foreach($this->sql AS $row)
+				{
+					$query = PDO::prepare($row);
+					if($query)
+					{
+						$query->execute();
+						$this->result[] = $row. "(true)";
+					}
+					else
+					{
+						throw new Exception($row." (db cevap vermedi)");
+					}
+				}
+			} /*if ($metot == "update")*/
+			
+			if ($metot == "delete")
+			{
+				foreach($this->sql AS $row)
+				{
+					$query = PDO::prepare($row);
+					if($query)
+					{
+						$query->execute();
+						$this->result[] = $row. "(true)";
+					}
+					else
+					{
+						throw new Exception($row." (db cevap vermedi)");
+					}
+				}
+			} /*if ($metot == "delete")*/
 		}
 		catch(Exception $e){
 			echo  "Error : ".$e->getMessage() ."<br/>"."File : ".$e->getFile() . "<br/>"."Line : ".$e->getLine() . "<br/>";
@@ -256,16 +389,23 @@ class database extends PDO
 
 
 $db = new database();
-$db->exec("SELECT [(email:id, adsoyad)]
-		   WHERE  [email.id=35]");
+$db->exec("DEleTe [(email:adsoyad='Sibel Pamuk'), (haberler:baslik='baslik')]");
 var_dump ($db->result);
-var_dump ($db->sql);		   
+var_dump ($db->sql);
 
 /*
 Örnek
-$result = $db->exec("SELECT [(table1:id, ad, soyad), (table2:id,ad,soyad->inner, ON table1.id = table2.id)] 
+$db->exec("SELECT [(table1:id, ad, soyad), (table2:id,ad,soyad->inner, ON table1.id = table2.id)] 
 		   WHERE [id = 5 and aid =4] 
 		   ORDER BY [id DesC] 
 		   GROUP BY[ad] 
-		   LIMIT [0,7]");*/
+		   LIMIT [0,7]");
+		   
+$db->exec("Insert [(email:adsoyad='akif', email= 'Başlık'), (haberler:baslik='baslik', icerik= 'icerik')]");
+
+$db->exec("uPdaTe [(email:adsoyad='akif', mesaj= 'Başlık'), (haberler:baslik='baslik', icerik= 'icerik')]
+			Where [(id = 5)]");
+
+$db->exec("DEleTe [(email:adsoyad='Sibel Pamuk'), (haberler:baslik='baslik')]");			
+*/		   
 ?>
