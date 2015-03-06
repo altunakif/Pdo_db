@@ -5,7 +5,7 @@ etmektedir.
 $db = new database('localhost', 'testdb', 'testuser', 'password');
 
 # Insert #
--Example 1 : $db->exec("insert [(email:adsoyad='akif', email= 'Başlık')]");
+- Example 1 : $db->exec("insert [(email:adsoyad='akif', email= 'Başlık')]");
 -Example 2 : $db->exec("insert [(email:adsoyad='akif', email= 'Başlık'), (haberler:baslik='baslik', icerik= 'icerik')]");
 
 # Update #
