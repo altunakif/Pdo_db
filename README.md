@@ -11,15 +11,15 @@ $db = new database('localhost', 'testdb', 'testuser', 'password');
 
 # Update #
 - usage     : $db->exec("update [(table:columns=value, columns=value)] Where [(columns = value)]");
-- Example 1 : $db->exec("uPdaTe [(email:adsoyad='Akif ALTUN', mesaj= 'Deneme Başlık')]
+- Example 1 : $db->exec("update [(email:adsoyad='Akif ALTUN', mesaj= 'Deneme Başlık')]
 			                  Where [(id = 50)]");
-- Example 2 : $db->exec("uPdaTe [(email:adsoyad='akif', mesaj= 'Başlık'), (haberler:baslik='baslik', icerik= 'icerik')]
+- Example 2 : $db->exec("UPDATE [(email:adsoyad='akif', mesaj= 'Başlık'), (haberler:baslik='baslik', icerik= 'icerik')]
 			                  Where [(id = 50)]");
 			
 # Delete #
 - usage     : $db->exec("delete [(table:columns=value)]");
-- Example 1 : $db->exec("DEleTe [(email:id = 36)]");
-- Example 2 : $db->exec("DEleTe [(email:adsoyad='Sibel Pamuk'), (haberler:baslik='baslik')]");
+- Example 1 : $db->exec("DELETE [(email:id = 36)]");
+- Example 2 : $db->exec("delete [(email:adsoyad='Sibel Pamuk'), (haberler:baslik='baslik')]");
 
 # Select #
 - usage     : $db->exec("select [(table:columns, columns, ..), (table:columns, columns, ..->(inner, left, right), ON table.value = table.value)..] Where [(columns = value)] ORDER BY [value DesC,ASC]  GROUP BY [value] LIMIT [int,int]");
