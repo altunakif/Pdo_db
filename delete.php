@@ -1,5 +1,13 @@
 ﻿<?php
-/* EXAMPLES OF DELETE */
+/**
+ * EXAMPLES OF DELETE
+ * @author Akif ALTUN
+ * @github https://github.com/altunakif
+ * @mail altun_akif@hotmail.com
+ * @phone +90 537 500 2090
+ * @time Wednesday, 2 March 2015 09:47 (GMT + 2:00) Turkey
+ * @update 06 March 2015 09:20 (GMT + 2:00) Turkey
+*/
 
 // Class File
 require 'class_pdo_db.php';
