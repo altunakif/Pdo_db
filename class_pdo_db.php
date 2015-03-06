@@ -5,7 +5,7 @@
  * @github https://github.com/altunakif
  * @mail altun_akif@hotmail.com
  * @time Wednesday, 2 March 2015 09:47 (GMT + 2:00) Turkey
- * @update 5 March 2015 16:33 (GMT + 2:00) Turkey
+ * @update 06 March 2015 09:20 (GMT + 2:00) Turkey
 */
 class database extends PDO
 {
@@ -385,24 +385,5 @@ class database extends PDO
 		}
 	} //function run
 	#RUN S_______________________________________________#
-}
-
-
-
-
-/*
-Örnek
-$db->exec("SELECT [(table1:id, ad, soyad), (table2:id,ad,soyad->inner, ON table1.id = table2.id)] 
-		   WHERE [id = 5 and aid =4] 
-		   ORDER BY [id DesC] 
-		   GROUP BY[ad] 
-		   LIMIT [0,7]");
-		   
-$db->exec("Insert [(email:adsoyad='akif', email= 'Başlık'), (haberler:baslik='baslik', icerik= 'icerik')]");
-
-$db->exec("uPdaTe [(email:adsoyad='akif', mesaj= 'Başlık'), (haberler:baslik='baslik', icerik= 'icerik')]
-			Where [(id = 5)]");
-
-$db->exec("DEleTe [(email:adsoyad='Sibel Pamuk'), (haberler:baslik='baslik')]");			
-*/		   
+}		   
 ?>
